@@ -1,0 +1,442 @@
+{{ utd_header }}
+
+<script type="text/javascript">
+  <!--
+    function deactivate_confirm(inputForm)
+      {
+        message = 'You are about to permanently deactivate this minor. ' +
+                  'If you deactivate this minor and need it again, you ' +
+                  'will need to create a new minor with the same values. ' +
+                  'Are you sure you want to proceed?';
+        if (confirm(message))
+          {
+        	var new_action = 'D';
+            document.getElementById('deactivate_sw').value = new_action;
+            inputForm.submit(); 
+          }
+        else
+          {
+            alert('Deactivation request cancelled.');
+          }
+      }          
+  //-->
+</script>
+
+{% if recv.auth_to_view != 'X' %}
+  <p class="error">
+    You are not authorized to view this page.
+  </p>
+{% elif recv.auth_to_change != 'X' and send.stat_ty_schl_fos_seq == '' %}
+    <p class="error">
+      You are not authorized to access this page.
+    </p>
+{% else %}
+
+  {% if recv.sequence_nbr != '' %}
+    {% if recv.auth_to_change != 'X' %}
+      <h2>View Credential</h2>
+    {% else %}
+      <h2>Edit Credential</h2>
+    {% endif %}
+  {% else %}
+    <h2>Create New Credential</h2>
+  {% endif %}
+  
+  {% if recv.return_code != '' %}
+    <p class="error">
+      {{recv.return_msg}}
+    </p>
+  {% endif %}
+  
+  {% if recv.success_update == 'X' %}
+    <p class="success">
+      Your update was successful.
+    </p>
+  {% endif %}
+  
+  {% if recv.success_store == 'X' %}
+    <p class="success">
+      Your new credential creation was successful. - {{recv.cred_code}}
+    </p>
+  {% endif %}
+  
+  {% if recv.success_deactivation == 'X' %}
+    <p class="success">
+      Your deactivation was successful.
+    </p>
+  {% endif %}
+
+  <form name="minor_edit" id="minor_edit" action=" " method="post">
+    {% csrf_token %}
+    <table>
+
+      <tr>
+        <th>Open</th>
+        <td>
+          {% if recv.auth_to_turn_on_off != 'X' %}
+            {{recv.on_off_sw_desc}}
+          {% elif recv.status == 'D' %}
+            {{recv.on_off_sw_desc}}
+          {% else %}
+            <input type="radio" id="on_off_sw_y"  name="on_off_sw"  value="Y"
+              {% if recv.on_off_sw = 'Y' %}
+                checked='checked'
+              {% endif %}  /> <label for="on_off_sw_y" class="inline">Yes</label>
+            <input type="radio" id="on_off_sw_N"  name="on_off_sw"  value="N" 
+              {% if recv.on_off_sw = 'N' %}
+                checked='checked'
+              {% endif %}  /><label for="on_off_sw_n" class="inline">No</label>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th><label for="url" class="inline">Detail URL</label></th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            <a href='{{recv.url}}'>{{recv.url}}</a>
+            <input type="hidden" name="url" value='{{recv.url}}' />
+          {% elif recv.status == 'D' %}
+            <a href='{{recv.url}}'>{{recv.url}}</a>
+          {% else %} 
+            <input type="text" size="100" maxlength="250" name="url" value='{{recv.url}}' />
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th><label for="url" class="inline">Cohort Description</label></th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            <a href='{{recv.url}}'>{{recv.cohort_description}}</a>
+            <input type="hidden" name="cohort_description" value='{{recv.cohort_description}}' />
+          {% elif recv.status == 'D' %}
+            {{recv.cohort_description}}
+          {% else %} 
+            <input type="text" size="100" maxlength="100" name="cohort_description" value='{{recv.cohort_description}}' />
+          {% endif %}
+        </td>
+      </tr>
+            
+
+        {% if recv.sequence_nbr != '' %}
+          {% if recv.return_code == '' %}
+            <tr>
+              <th>Credential Code</th> 
+              <td>
+                {{recv.cred_code}}
+              </td>
+            </tr>
+          {% endif %}
+        {% endif %}
+      <tr>
+        <th>Credential Type</th>
+        <td>
+          {% if recv.sequence_nbr != '' %}
+            {% if send.action != 'S' %}
+              {{recv.minor_type_desc}}
+              <input type="hidden" size="2" name="minor_type" value='{{recv.minor_type}}' />
+            {% elif recv.success_store == 'X' %}
+              {{recv.minor_type_desc}}
+              <input type="hidden" size="2" name="minor_type" value='{{recv.minor_type}}' />
+            {% else %}
+              <input type="radio" id="minor_type_mn"  name="minor_type"  value="MN"
+                {% if send.minor_type = 'MN' %}
+                  checked='checked'
+                {% endif %}  /> <label for="minor_type_mn" class="inline">Minor</label>
+              <input type="radio" id="minor_type_ct"  name="minor_type"  value="CT" 
+                {% if send.minor_type = 'CT' %}
+                  checked='checked'
+                {% endif %}  /><label for="minor_type_ct" class="inline">Certificate</label>
+            {% endif %}
+          {% elif recv.auth_to_change != 'X' %}
+            {{recv.minor_type_desc}}
+          {% else %}
+            <input type="radio" id="minor_type_mn"  name="minor_type"  value="MN"
+              {% if send.minor_type = 'MN' %}
+                checked='checked'
+              {% endif %}  /> <label for="minor_type_mn" class="inline">Minor</label>
+            <input type="radio" id="minor_type_ct"  name="minor_type"  value="CT" 
+              {% if send.minor_type = 'CT' %}
+                checked='checked'
+              {% endif %}  /><label for="minor_type_ct" class="inline">Certificate</label>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>  
+        <th>School</th>
+        <td>
+          {% if recv.sequence_nbr != '' %}
+            {% if send.action != 'S' %}
+              {{recv.school_desc}} ({{recv.school}})
+              <input type="hidden" size="1" name="school" value='{{recv.school}}' />
+            {% elif recv.success_store == 'X' %}
+              {{recv.school_desc}} ({{recv.school}})
+              <input type="hidden" size="1" name="school" value='{{recv.school}}' />
+            {% else %}
+              <input type="text" size="1" maxlength="1" name="school" value='{{recv.school}}' />
+            {% endif %}
+          {% elif recv.auth_to_change != 'X' %}
+            {{recv.school_desc}} ({{recv.school}})
+          {% else %}
+            <input type="text" size="1" maxlength="1" name="school" value='{{recv.school}}' />
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Field of Study</th>
+        <td>
+          {% if recv.sequence_nbr != '' %}
+            {% if send.action != 'S' %}
+              {{recv.field_of_study}}
+              <input type="hidden" size="3" name="field_of_study" value='{{recv.field_of_study}}' />
+            {% elif recv.success_store == 'X' %}
+              {{recv.field_of_study}}
+              <input type="hidden" size="3" name="field_of_study" value='{{recv.field_of_study}}' />
+            {% else %}
+              <input type="text" size="3" maxlength="3" name="field_of_study" value='{{recv.field_of_study}}' />
+            {% endif %}
+          {% elif recv.auth_to_change != 'X' %}
+            {{recv.field_of_study}}
+          {% else %}
+            <input type="text" size="3" maxlength="3" name="field_of_study" value='{{recv.field_of_study}}' />
+          {% endif %}
+        </td>
+      </tr>
+
+        {% if recv.sequence_nbr != '' %}
+          <tr>
+          {% if send.action == 'S' %}
+            {% if recv.success_store == 'X' %}
+              <th>Sequence Number</th>
+              <td>{{recv.sequence_nbr}}</td>
+              <input type="hidden" size="2" name="sequence_nbr" value='{{recv.sequence_nbr}}' />
+            {% endif %}
+          {% else %}
+            <th>Sequence Number</th>
+            <td>{{recv.sequence_nbr}}</td>
+            <input type="hidden" size="2" name="sequence_nbr" value='{{recv.sequence_nbr}}' />
+          {% endif %}
+          </tr>
+        {% endif %}
+
+      <tr>
+        <th><label for="desc_short" class="inline">Short Title</label></th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            {{recv.desc_short}}
+            <input type="hidden" name="desc_short" value='{{recv.desc_short}}' />
+          {% elif recv.status == 'D' %}
+            {{recv.desc_short}}
+          {% else %} 
+            <input type="text" size="50" maxlength="50" name="desc_short" value='{{recv.desc_short}}' />
+          {% endif %}
+        </td>        
+      </tr>
+      <tr>
+        <th><label for="desc_long" class="inline">Long Title</label></th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            {{recv.desc_long}}
+            <input type="hidden" name="desc_long" value='{{recv.desc_long}}' />
+          {% elif recv.status == 'D' %}
+            {{recv.desc_long}}
+          {% else %}
+            <input type="text" size="100" maxlength="100" name="desc_long" value='{{recv.desc_long}}' />
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th><label for="lo_ccyys" class="inline">Begin Semester</label></th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            {{recv.lo_ccyys}}
+            <input type="hidden" name="lo_ccyys" value='{{recv.lo_ccyys}}' />
+          {% elif recv.status == 'D' %}
+            {{recv.lo_ccyys}}
+          {% else %}
+            <input type="text" size="5" maxlength="5" name="lo_ccyys" value='{{recv.lo_ccyys}}' />
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th><label for="hi_ccyys" class="inline">End Semester</label></th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            {{recv.hi_ccyys}}
+            <input type="hidden" name="hi_ccyys" value='{{recv.hi_ccyys}}' />
+          {% elif recv.status == 'D' %}
+            {{recv.hi_ccyys}}
+          {% else %}
+            <input type="text" size="5" maxlength="5" name="hi_ccyys" 
+              {% if recv.school == '' %}
+                value='99999'
+              {% else %}
+                value='{{recv.hi_ccyys}}' 
+              {% endif %}
+            />
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th><label for="total_hours" class="inline">Total Hours</label></th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            {{recv.total_hours}}
+            <input type="hidden" name="total_hours" value='{{recv.total_hours}}' />
+          {% elif recv.status == 'D' %}
+            {{recv.total_hours}}
+          {% else %}
+            <input type="text" size="3" maxlength="3" name="total_hours" value='{{recv.total_hours}}' />
+          {% endif %}
+        </td>
+      </tr>
+
+<!-- Commented out max students - we may use this in the future, though
+      <tr>             
+        <th><label for="max_students" class="inline">Max Students</label></th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            {{recv.max_students}}
+          {% elif recv.status == 'D' %}
+            {{recv.max_students}}
+          {% else %}
+            <input type="text" size="7" maxlength="7" name="max_students" 
+              {% if recv.school == '' %}
+                value='9999999'
+              {% else %}
+                value='{{recv.max_students}}' 
+              {% endif %}
+            />
+          {% endif %}
+        </td>
+      </tr>
+ -->
+      <tr>
+        <th>Auto-Approve</th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            {{recv.auto_approve_desc}}
+            <input type="hidden" name="auto_approve"  value='{{recv.auto_approve}}' />
+          {% elif recv.status == 'D' %}
+            {{recv.auto_approve_desc}}
+          {% else %}
+            <input type="radio" id="auto_approve_y"  name="auto_approve"  value="Y"
+              {% if recv.auto_approve = 'Y' %}
+                checked='checked'
+              {% endif %}  /> <label for="auto_approve_y" class="inline">Yes</label>
+            <input type="radio" id="auto_approve_n"  name="auto_approve"  value="N" 
+              {% if recv.auto_approve = 'N' %}
+                checked='checked'
+              {% endif %}  /><label for="auto_approve_n" class="inline">No</label>
+          {% endif %}
+        </td>
+      </tr> 
+      
+      {% if recv.cip_code != '' %}
+      <tr>
+        <th><label for="cip_code" class="inline">CIP Code</label></th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            {{recv.cip_code}}
+            <input type="hidden" name="cip_code" value='{{recv.cip_code}}' />
+          {% elif recv.status == 'D' %}
+            {{recv.cip_code}}
+          {% else %} 
+            <input type="text" size="13" maxlength="13" name="cip_code" value='{{recv.cip_code}}' />
+          {% endif %}
+        </td>
+      </tr>
+      {% endif %}
+      
+      <tr>
+        <th>Credential Level</th>
+        <td>
+          {% if recv.auth_to_change != 'X' %}
+            {{recv.cred_level_desc}}
+            <input type="hidden" name="cred_level"  value='{{recv.cred_level}}' />
+          {% elif recv.status == 'D' %}
+            {{recv.cred_level_desc}}
+          {% else %}
+            <input type="radio" id="cred_level_u"  name="cred_level"  value="U"
+              {% if recv.cred_level = 'U' %}
+                checked='checked'
+              {% endif %}  /> <label for="cred_level_u" class="inline">Undergraduate</label>
+            <input type="radio" id="cred_level_g"  name="cred_level"  value="G" 
+              {% if recv.cred_level = 'G' %}
+                checked='checked'
+              {% endif %}  /><label for="cred_level_g" class="inline">Graduate</label>
+          {% endif %}
+        </td>
+      </tr>
+
+    </table>
+
+    {% if recv.on_off_sw = 'Y' %}
+      {% if recv.user_role = 'ADV' %}
+        {% if recv.minor_type == 'CT' %}
+          {% if recv.auto_approve = 'Y' %}
+            <td><a href="../../../sisutil/edoc/submission/regstforcert">Apply</a></td>
+          {% else %}
+            <td><a href="../../../sisutil/edoc/submission/applystforcert">Apply</a></td>
+          {% endif %}
+        {% endif %}
+        {% if recv.minor_type == 'MN' %}
+          {% if recv.auto_approve = 'Y' %}
+            <td><a href="../../../sisutil/edoc/submission/regstforminor">Apply</a></td>
+          {% else %}
+            <td><a href="../../../sisutil/edoc/submission/applystforminor">Apply</a></td>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+    
+    {% if recv.user_role = 'STD' %}
+      {% if recv.minor_type == 'CT' %}
+        {% if recv.auto_approve = 'Y' %}
+          <td><a href="../../../sisutil/edoc/submission/regforcertificate?action=2&minors={{ recv.cred_code }}">Apply</a></td>
+        {% else %}
+          <td><a href="../../../sisutil/edoc/submission/applyforcertificate?action=2&minors={{ recv.cred_code }}">Apply</a></td>
+        {% endif %}
+      {% endif %}
+      {% if recv.minor_type == 'MN' %}
+        {% if recv.auto_approve = 'Y' %}
+          <td><a href="../../../sisutil/edoc/submission/regforminor?action=2&minors={{ recv.cred_code }}">Apply</a></td>
+        {% else %}
+          <td><a href="../../../sisutil/edoc/submission/applyforminor?action=2&minors={{ recv.cred_code }}">Apply</a></td>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+    
+    {% if recv.auth_to_turn_on_off == 'X' %}
+      {% if recv.status != 'D' %}
+        {% if recv.school != '' %}
+          {% if send.action != 'S' %}
+            <div><input type="submit" name="update" value="Update Credential" /></div>
+            {% if recv.auth_to_change == 'X' %}
+              <div><input type="button" name="deactivate" value="Deactivate Credential" id="deactivate_button" class="floatright" onclick="deactivate_confirm(minor_edit)" /></div>
+              <input type="hidden" name="deactivate_sw" id="deactivate_sw" />
+            {% endif %}
+          {% else %}
+            {% if recv.success_store == 'X' %}
+              <div><input type="submit" name="update" value="Update Credential" /></div>
+              {% if recv.auth_to_change == 'X' %}
+                <div><input type="button" name="deactivate" value="Deactivate Credential" id="deactivate_button" class="floatright" onclick="deactivate_confirm(minor_edit)" /></div>
+                <input type="hidden" name="deactivate_sw" id="deactivate_sw" />
+              {% endif %}
+            {% else %}
+              <input type="submit" name="create" value="Create New Credential" />
+            {% endif %}
+          {% endif %}
+        {% else %}
+          <input type="submit" name="create" value="Create New Credential" />
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  </form>
+  
+{% endif %}
+
+{% if recv.debug_sw == 'X' %}
+  {% include 'debug.html' %}
+{% endif %}
+
+{{ utd_footer }} 

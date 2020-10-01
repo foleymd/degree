@@ -1,0 +1,349 @@
+{{ utd_header }}
+
+<script src="/apps/degree/minors/static/js/jquery-3.1.0.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/apps/degree/minors/static/js/newmodal.js" type="text/javascript" charset="utf-8"></script>
+
+{% if recv.return_code != '' %}
+  <p class="error">
+    {{recv.return_msg}} ({{recv.return_code}})
+  </p>
+{% elif recv.auth_to_view != 'X' %}
+  <p class="error">
+    You are not authorized to view this page.
+  </p>
+{% else %}
+
+  <strong><a href="http://catalog.utexas.edu/undergraduate/the-university/minor-and-certificate-programs/" target="_blank">Minor/Certificate Catalog Info</a></strong>
+
+  <h2>Search for Credential</h2>  
+  
+  <p>Browse by beginning school or school / field of study combination. 
+     (Leaving these fields blank will get all active or deactivated credentials.)</p>
+  
+  <form name="minor_search" id="minor_search" action=" " method="get">
+    {% csrf_token %}
+    <div>
+      <div>
+        <label for="search_school" class="inline">School</label>
+          <select title="Search School" name="search_school" />
+
+           <option value=" "
+             {% if recv.search_school == ' ' %}
+               selected="selected"
+             {% endif %}
+           > </option>
+
+           <option value="9"
+             {% if recv.search_school == '9' %}
+               selected="selected"
+             {% endif %}
+           >Architecture (9)</option>
+
+           <option value="2"
+             {% if recv.search_school == '2' %}
+               selected="selected"
+             {% endif %}
+           >Business Administration (2)</option>
+           
+           <option value="C"
+             {% if recv.search_school == 'C' %}
+               selected="selected"
+             {% endif %}
+           >Communication (C)</option>
+
+           <option value="3"
+             {% if recv.search_school == '3' %}
+               selected="selected"
+             {% endif %}
+           >Education (3)</option>
+
+           <option value="4"
+             {% if recv.search_school == '4' %}
+               selected="selected"
+             {% endif %}
+           >Engineering (4)</option>
+
+           <option value="5"
+             {% if recv.search_school == '5' %}
+               selected="selected"
+             {% endif %}
+           >Fine Arts (5)</option>
+
+           <option value="J"
+             {% if recv.search_school == 'J' %}
+               selected="selected"
+             {% endif %}
+           >Geosciences (J)</option>
+           
+           <option value="B"
+             {% if recv.search_school == 'B' %}
+               selected="selected"
+             {% endif %}
+           >Graduate Business (B)</option>
+
+           <option value="6"
+             {% if recv.search_school == '6' %}
+               selected="selected"
+             {% endif %}
+           >Graduate School (6)</option>
+
+           <option value="7"
+             {% if recv.search_school == '7' %}
+               selected="selected"
+             {% endif %}
+           >Law School (7)</option>
+
+           <option value="L"
+             {% if recv.search_school == 'L' %}
+               selected="selected"
+             {% endif %}
+           >Liberal Arts (L)</option>
+
+           <option value="M"
+             {% if recv.search_school == 'M' %}
+               selected="selected"
+             {% endif %}
+           >Medical School (M)</option>
+
+           <option value="E"
+             {% if recv.search_school == 'E' %}
+               selected="selected"
+             {% endif %}
+           >Natural Sciences (E)</option>           
+
+          <option value="N"
+             {% if recv.search_school == 'N' %}
+               selected="selected"
+             {% endif %}
+           >Nursing (N)</option>
+
+           <option value="8"
+             {% if recv.search_school == '8' %}
+               selected="selected"
+             {% endif %}
+           >Pharmacy (8)</option>
+
+           <option value="S"
+             {% if recv.search_school == 'S' %}
+               selected="selected"
+             {% endif %}
+           >Social Work (S)</option>
+           
+           <option value="U"
+             {% if recv.search_school == 'U' %}
+               selected="selected"
+             {% endif %}
+           >Undergraduate Studies (U)</option>
+          
+          </select>
+          
+
+        <label for="search_field_of_study" class="inline">Field of Study</label>
+        <input type="text" size="3" name="search_field_of_study"
+          {% if recv.search_field_of_study != '' %}
+            value='{{recv.search_field_of_study}}' 
+          {% endif %} /> 
+      </div>
+      <div>
+        <input type="radio" id="type_mn"  name="search_minor_type"  value="MN"
+          {% if recv.search_minor_type = 'MN' %}
+            checked='checked'
+          {% endif %}  /> <label for="type_mn" class="inline">Minors</label>
+        <input type="radio" id="type_ct"  name="search_minor_type"  value="CT" 
+          {% if recv.search_minor_type = 'CT' %}
+            checked='checked'
+          {% endif %}  /><label for="type_ct" class="inline">Certificates</label>
+        <input type="radio" id="type_bh"  name="search_minor_type"  value="" 
+          {% if recv.search_minor_type = '' %}
+            checked='checked'
+          {% endif %}  /><label for="type_bh" class="inline">Both</label>
+      </div>
+      <div>
+        <input type="radio" id="status_a"  name="search_status"  value="A"
+          {% if recv.search_status = 'A' %}
+            checked='checked'
+          {% endif %}  /> <label for="status_a" class="inline">Active credentials</label>
+        <input type="radio" id="status_d"  name="search_status"  value="D" 
+          {% if recv.search_status = 'D' %}
+            checked='checked'
+          {% endif %}  /><label for="status_d" class="inline">Deactivated credentials</label>
+        <input type="radio" id="status_b"  name="search_status"  value="B" 
+          {% if recv.search_status = 'B' %}
+            checked='checked'
+          {% endif %}  /><label for="status_b" class="inline">Both</label>
+      </div>
+      <div>
+        <input type="hidden" name="action" value="S" />
+        <input type="submit" name="next" value="Search" />
+      </div>
+    </div>
+  </form>
+  
+  {% if recv.nbr_recs_returned == 0 %}
+    <p class="error">There were no matches for your input search criteria.</p>
+  {% else %}
+  
+    <h2>
+      {% if recv.search_status = 'A' %}
+        Active Credentials
+      {% elif recv.search_status = 'D' %}
+        Deactivated Credentials
+      {% elif recv.search_status = '' %}
+        Active and Deactivated Credentials
+      {% endif %}
+      {% if recv.search_minor_type = 'MN' %}
+        - Minors Only
+      {% endif%}
+      {% if recv.search_minor_type = 'CT' %}
+        - Certificates Only
+      {% endif%}
+      {% if recv.search_school != '' %}
+        - School {{ recv.search_school }}
+      {% endif%}
+      {% if recv.search_field_of_study != '' %}
+        - Field of Study {{ recv.search_field_of_study }}
+      {% endif%}
+    </h2>
+ 
+<div class="popup" data-popup="popup-1">
+    <div class="popup-inner">
+        <h2>Auto-approve</h2>
+        <p>Minors and certificates are set up as auto-approve or restricted. If auto-approve is yes, that indicates that you may apply and will automatically be approved for the credential you have selected. If auto-approved is no, that indicates that there is a review process from the owning college needed before you can be approved.  <strong>NOTE:  You will still need to see your major advisor to attach the approved minor or certificate to your major degree plan before you are considered pursuing the approved credential.</strong></p>
+        <p><a data-popup-close="popup-1" href="#">Close</a></p>
+        <a class="popup-close" data-popup-close="popup-1" href="#">x</a>
+    </div>
+</div>
+
+<div class="popup" data-popup="popup-2">
+    <div class="popup-inner">
+        <h2>Begin Semester</h2>
+        <p>This is the semester the credential is available for students to apply.</p>
+        <p><a data-popup-close="popup-2" href="#">Close</a></p>
+        <a class="popup-close" data-popup-close="popup-2" href="#">x</a>
+    </div>
+</div>
+
+<div class="popup" data-popup="popup-3">
+    <div class="popup-inner">
+        <h2>Open</h2>
+        <p>Open allows the owning college to make the credential available for student applications or to turn them off. If open is yes, students can apply. If open is no, the credential is not available for students to apply at that time.</p>
+        <p><a data-popup-close="popup-3" href="#">Close</a></p>
+        <a class="popup-close" data-popup-close="popup-3" href="#">x</a>
+    </div>
+</div>
+
+<div class="popup" data-popup="popup-4">
+    <div class="popup-inner">
+        <h2>Application Link</h2>
+        <p>The Application Link allows advisors and students to go directly into the Student Application system for the credential.</p>
+        <p><a data-popup-close="popup-4" href="#">Close</a></p>
+        <a class="popup-close" data-popup-close="popup-4" href="#">x</a>
+    </div>
+</div>
+
+    <p>Click on the title to view / edit the credential.</p>
+    <table id="credential_table">
+      <thead>
+        <tr>
+          <th class="inv_head">Status</th>
+          <th class="inv_head">Credential <br /> Type</th>
+          <th class="inv_head">School</th>
+          <th class="inv_head">Field of Study</th>
+          <th class="inv_head">Sequence <br /> Number</th>
+          <th class="inv_head">Title / Cohort Description</th>
+          <th class="inv_head">Credential <br /> Code</th>          
+          <th class="inv_head">Auto <br /> Approve&nbsp;<a class="btn" data-popup-open="popup-1" href="#"><i class="fa fa-question-circle"></i></a></th>
+          <th class="inv_head">Begin <br /> Semester&nbsp;<a class="btn" data-popup-open="popup-2" href="#"><i class="fa fa-question-circle"></i></a></th>
+          <th class="inv_head">Open&nbsp;<a class="btn" data-popup-open="popup-3" href="#"><i class="fa fa-question-circle"></i></a></th>
+          {% if recv.user_role != '' %}
+            <th class="inv_head">Application <br /> Link&nbsp;<a class="btn" data-popup-open="popup-4" href="#"><i class="fa fa-question-circle"></i></a></th>
+          {% endif %}
+          
+        </tr>
+      </thead>
+      <tbody>
+        {% for minor in pda_recv_dict.minor_array %}
+          {% if minor.status != '' %}
+            <tr>
+              <td class="inv_head">{{ minor.status_desc }}</td>
+              <td class="inv_head">{{ minor.minor_type_desc }}</td>
+              <td class="inv_head">{{ minor.school_desc }} ({{ minor.school }})</td>
+              <td class="inv_head">{{ minor.field_of_study }}</td>
+              <td class="inv_head">{{ minor.sequence_nbr }}</td>
+              <td><a href="./edit/{{ minor.status }}{{ minor.cred_code }}">{{ minor.desc_long }} 
+                {% if minor.cohort_description != '' %}
+                  <hr />
+                {% endif %}
+                {{ minor.cohort_description }} </a> </td>
+              <td class="inv_head">{{ minor.cred_code }}</a></td>
+              <td class="inv_head">{{ minor.auto_approve_desc }}</td>
+              <td class="inv_head">{{ minor.lo_ccyys_desc }}</td>
+              <td class="inv_head">{{ minor.on_off_sw_desc }}</td>
+              {% if minor.on_off_sw = 'Y' %}
+                {% if recv.user_role = 'ADV' %}
+                  {% if minor.minor_type == 'CT' %}
+                    {% if minor.auto_approve = 'Y' %}
+                      <td><a href="../../sisutil/edoc/submission/regstforcert">Apply</a></td>
+                    {% else %}
+                      <td><a href="../../sisutil/edoc/submission/applystforcert">Apply</a></td>
+                    {% endif %}
+                  {% else %}
+                    {% if minor.auto_approve = 'Y' %}
+                      <td><a href="../../sisutil/edoc/submission/regstforminor">Apply</a></td>
+                    {% else %}
+                      <td><a href="../../sisutil/edoc/submission/applystforminor">Apply</a></td>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+                {% if recv.user_role = 'STD' %}
+                  {% if minor.minor_type == 'CT' %}
+                    {% if minor.auto_approve = 'Y' %}
+                      <td><a href="../../sisutil/edoc/submission/regforcertificate?action=2&minors={{ minor.cred_code }}">Apply</a></td>
+                    {% else %}
+                      <td><a href="../../sisutil/edoc/submission/applyforcertificate?action=2&minors={{ minor.cred_code }}">Apply</a></td>
+                    {% endif %}
+                  {% else %}
+                    {% if minor.auto_approve = 'Y' %}
+                      <td><a href="../../sisutil/edoc/submission/regforminor?action=2&minors={{ minor.cred_code }}">Apply</a></td>
+                    {% else %}
+                      <td><a href="../../sisutil/edoc/submission/applyforminor?action=2&minors={{ minor.cred_code }}">Apply</a></td>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </tr>
+            
+          {% endif%}
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    {% if recv.next_school %}            
+      <form action=" " id="minor_browse" method="get">
+        {% csrf_token %}
+        <div>
+          <input type="hidden" name="start_isn" value="{{recv.next_isn}}" />
+          <input type="hidden" name="s_status" value="{{recv.search_status}}" />
+          <input type="hidden" name="s_minor_type" value="{{recv.search_minor_type}}" />
+          <input type="hidden" name="s_school" value="{{recv.search_school}}" />
+          <input type="hidden" name="s_field_of_study" value="{{recv.search_field_of_study}}" />
+          <input type="hidden" name="page_status" value="{{recv.next_status}}" />
+          <input type="hidden" name="page_minor_type" value="{{recv.next_minor_type}}" />
+          <input type="hidden" name="page_school" value="{{recv.next_school}}" />
+          <input type="hidden" name="page_field_of_study" value="{{recv.next_field_of_study}}" />
+          <input type="hidden" name="sequence_nbr" value="{{recv.next_sequence_nbr}}" />
+          <input type="hidden" name="action" value="B" />
+          <input type="submit" name="next" value="Next 25 Credentials >>" />   
+        </div>
+      </form>                                                                        
+    {% endif %}
+  
+  {% endif %}
+  
+{% endif %}
+
+{% if recv.debug_sw == 'X' %}
+  {% include 'debug.html' %}
+{% endif %}
+  
+{{ utd_footer }} 

@@ -1,0 +1,110 @@
+{% extends 'utd_base.html' %}
+
+{% load static from staticfiles %}
+
+{% block content %}
+
+<h2>Late Add Inbox</h2>
+
+{% if recv.return_code and form_submitted %}
+
+    <div class="error">
+        {{ recv.return_msg }}
+        ({{ recv.return_code }})
+    </div>
+
+{% endif %}
+
+{% if credentials %}
+    <div class="bold">
+        {%  if '?' in this_url %}
+            <a href="{{ this_url }}&export=csv" class="btn btn-default">Download Listing</a>
+        {% else %}
+            <a href="{{ this_url }}?export=csv" class="btn btn-default">Download Listing</a>
+        {% endif %}
+    </div>
+
+
+<div class="pagination">
+    <span class="step-links">
+        {% if credentials.has_previous %}
+            <a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ credentials.number }} of {{ credentials.paginator.num_pages }}.
+        </span>
+
+        {% if credentials.has_next %}
+             <a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+
+
+<table id="credentials" summary="This table displays credentials for a
+                                 student retrieved through an EID
+                                 search.">
+
+    <thead>
+        <tr>
+            <th id="c_eid"><a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=eid&amp;sort_direction={{ next_sort_direction }}">EID</a></th>
+            <th id="c_name"><a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=name&amp;sort_direction={{ next_sort_direction }}">Name</a></th>
+            <th id="c_status"><a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=status&amp;sort_direction={{ next_sort_direction }}">Status</a></th>
+            <th id="c_credential_code"><a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=credential_code&amp;sort_direction={{ next_sort_direction }}">Credential Code</a></th>
+            <th id="c_credential_desc_long"><a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=credential_desc_long&amp;sort_direction={{ next_sort_direction }}">Credential Description</a></th>
+            <th id="c_pursuing"><a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=pursuing&amp;sort_direction={{ next_sort_direction }}">Pursuing</a></th>
+            <th id="c_effective_ccyys"><a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=effective_ccyys&amp;sort_direction={{ next_sort_direction }}">Effective</a></th>
+            <th id="c_catalog"><a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=catalog_beg&amp;sort_direction={{ next_sort_direction }}">Catalog</a></th>
+            <th id="c_edit">View/Edit</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for item in credentials %}
+        {% if item.eid %}
+        <tr>
+            <td headers="c_eid">{{ item.eid }}</td>
+            <td headers="c_name">{{ item.name }}</td>
+            <td headers="c_status">{{ item.status }}</td>
+            <td headers="c_credential_code">{{ item.credential_code }}</td>
+            <td headers="c_credential_description">{{ item.credential_desc_long }}</td>
+            <td headers="c_pursuing">{{ item.pursuing }}</td>
+            <td headers="c_effective_ccyys">{% if item.effective_ccyys != '0' %}{{ item.effective_ccyys }}{% endif %}</td>
+            <td headers="c_catalog">{{  item.catalog }}</td>
+            {%  if item.status == 'Pending' %}
+                <td headers="c_edit"><a href="../../../../sisutil/edoc/inbox/{{ item.doc_nbr }}"><button>View/Edit</button></a></td>
+            {%  else %}
+                <td headers="c_edit"><form action="{% url 'credential_by_doc_nbr' doc_nbr=item.doc_nbr %}"><input type="submit" value="View/Edit"></form></td>
+            {%  endif %}
+        </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+
+</table>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if credentials.has_previous %}
+            <a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ credentials.number }} of {{ credentials.paginator.num_pages }}.
+        </span>
+
+        {% if credentials.has_next %}
+             <a href="{% url 'late_add_inbox' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+
+{% else %}
+
+<p class="no_results">No Late Add credentials found.</p>
+
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends 'utd_base.html' %}
+
+{% load static from staticfiles %}
+
+{% block content %}
+
+ {% if messages %}
+    <ul class="success">
+        {% for message in messages %}
+            <li>{{ message }} Reference number: {{ job_number }}.</li>
+        {% endfor %}
+    </ul>
+ {% endif %}
+
+{% if recv.return_code  %}
+  
+    <div class="error">
+        {{ recv.return_msg }}
+        ({{ recv.return_code }})      
+    </div>
+
+{% else %}
+    <h2>Search for Student by EID</h2>
+
+    <form id="search" method="get" >
+
+        <div>
+            <label for="s_eid">EID</label>
+            <input name="s_eid" id="s_eid"
+                   value="{{ recv.eid.0 }}"
+                   size="8" maxlength="8" />
+            <input type="submit" name="submit" id="submit" value="Submit" />
+        </div>
+    </form>
+
+    {% if credentials %}
+
+    <h2>Search Results for {{ recv.name.0 }} ({{ send.eid }})</h2>
+
+    <span class="bold">
+        Download Results:
+    {%  if '?' in this_url %}
+        <a href="{{ this_url }}&export=csv" class="btn btn-default"><button>Download</button></a>
+    {% else %}
+        <a href="{{ this_url }}?export=csv" class="btn btn-default"><button>Download</button></a>
+    {% endif %}
+    </span>
+
+
+    <div class="bold">
+
+    <form id="eid_report_form" method="get" action="">
+        Send a List of This Student's Credentials to eReports:
+        <input type="hidden" name="eid_report" id="eid_report" value="{{ send.eid }}" />
+        <input type="submit" name="eid_submitted" id="eid_submitted" value="Submit" />
+    </form>
+    </div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if credentials.has_previous %}
+                <a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ credentials.number }} of {{ credentials.paginator.num_pages }}.
+            </span>
+
+            {% if credentials.has_next %}
+                 <a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+
+    <table id="credentials" summary="This table displays credentials for a
+                                     student retrieved through an EID
+                                     search.">
+
+        <thead>
+            <tr>
+                <th id="c_type"><a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort=type&amp;sort_direction={{ next_sort_direction }}">Type</a></th>
+                <th id="c_status"><a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort=status&amp;sort_direction={{ next_sort_direction }}">Status</a></th>
+                <th id="c_credential_code"><a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort=credential_code&amp;sort_direction={{ next_sort_direction }}">Credential Code</a></th>
+                <th id="c_credential_name"><a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort=credential_desc_long&amp;sort_direction={{ next_sort_direction }}">Credential Description</a></th>
+                <th id="c_pursuing"><a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort=pursuing&amp;sort_direction={{ next_sort_direction }}">Pursuing</a></th>
+                <th id="c_effective_ccyys"><a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort=effective_ccyys&amp;sort_direction={{ next_sort_direction }}">Effective CCYYS</a></th>
+                <th id="c_catalog"><a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort=catalog_beg&amp;sort_direction={{ next_sort_direction }}">Catalog</a></th>
+                <th id="c_conferred_ccyys"><a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort=conferred_ccyys&amp;sort_direction={{ next_sort_direction }}">Degree CCYYS</a></th>
+                <th id="c_edit">View/Edit</th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for item in credentials %}
+            <tr>
+                <td headers="c_type">{{ item.type }}</td>
+                <td headers="c_status">{{ item.status }}</td>
+                <td headers="c_credential_code">{{ item.credential_code }}</td>
+                <td headers="c_credential_name">{{ item.credential_desc_long }}</td>
+                <td headers="c_pursuing">{{ item.pursuing }}</td>
+                <td headers="c_effective_ccyys">{% if item.effective_ccyys != '0' %}{{ item.effective_ccyys }}{% endif %}</td>
+                <td headers="c_catalog">{% if item.catalog_beg %}{{ item.catalog }}{%  endif %}</td>
+                <td headers="c_conferred_ccyys">{% if item.conferred_ccyys != '0' %}{{ item.conferred_ccyys }}{% endif %}</td>
+                {%  if item.status != 'Pending' %}
+                    <td headers="c_edit"><form action="{% url 'credential_by_doc_nbr' doc_nbr=item.doc_nbr %}"><input type="submit" value="View/Edit"></form></td>
+                {% else %}
+                    <td headers="c_edit">N/A</td>
+                {%  endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if credentials.has_previous %}
+                <a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ credentials.number }} of {{ credentials.paginator.num_pages }}.
+            </span>
+
+            {% if credentials.has_next %}
+                 <a href="{% url 'search_by_eid' %}?s_eid={{ send.eid }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+
+
+    {% elif form_submitted == True %}
+
+       <p class="no_results">No results were found for EID {{ send.eid }}.</p>
+
+    {% endif %}
+
+{% endif %}
+
+{% endblock %}

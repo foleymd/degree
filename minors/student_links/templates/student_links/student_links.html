@@ -1,0 +1,43 @@
+{% extends 'utd_base.html' %}
+
+{% load static from staticfiles %}
+
+{% block content %}
+
+<!-- Future: Create a DIV class with page styling.  Create external CSS. -->
+
+<div style="
+    padding: 7px;
+    border: 2px solid #824324;
+    margin: 16px;"
+>
+
+<div>
+    <h3><a href="https://utdirect.utexas.edu/apps/degree/minors/">Minors/Certificate Search</a></h3>
+    <ul>
+        <li> - Allows anyone with a UT EID to search for minors/certificates.</li>
+        <li> - Lists all available minors/certificates and displays if they are open or closed.</li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://utdirect.utexas.edu/apps/sisutil/edoc/selection/">Student Application for Minors/Certificates</a></h3>
+    <ul>
+        <li> - Allows students to apply for minors/certificates. </li>
+        <li> - Allows students to request restricted minors/certificates. Restricted minors/certificates must go
+            through an approval process by the owning college/department.</li>
+        <li> - Allows advisors to apply for or request minors/certificates for a student. </li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://utdirect.utexas.edu/apps/degree/audits/">IDA 2.0</a></h3>
+    <ul>
+        <li> - Allows anyone with a UT EID to run degree audits on degree plans, minors, and certificates. </li>
+    </ul>
+</div>
+
+</div>
+
+{% endblock %}
+

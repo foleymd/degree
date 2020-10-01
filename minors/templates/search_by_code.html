@@ -1,0 +1,164 @@
+{% extends 'utd_base.html' %}
+
+{% load static from staticfiles %}
+
+{% block content %}
+
+ {% if messages %}
+    <ul class="success">
+        {% for message in messages %}
+            <li>{{ message }} Reference number: {{ job_number }}.</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+{% if recv.return_code %}
+
+    <div class="error">
+        {{ recv.return_msg }}
+        ({{ recv.return_code }})
+    </div>
+
+{% else %}
+
+    <h2>Search for Students by Credential Code</h2>
+
+    <form id="search" method="get" action="">
+
+        <div>
+            <label for="s_credential_code">Credential Code</label>
+            <input name="s_credential_code" id="s_credential_code"
+                   value="{{ recv.credential_code }}"
+                   size="8" maxlength="8" />
+
+            <label for="s_status">Status</label>
+             <select name="s_status" id="s_status">
+                 <option value="" {% if send.status == ' ' %}
+                     selected="selected"{% endif %}>&nbsp;</option>
+                 <option value="A" {% if send.status == 'A' %}
+                     selected="selected"{% endif %}>Approved</option>
+                 <option value="C" {% if send.status == 'C' %}
+                     selected="selected"{% endif %}>Conferred</option>
+                 <option value="S" {% if send.status == 'S' %}
+                     selected="selected"{% endif %}>Coursework Satisfied</option>
+                 <option value="L" {% if send.status == 'L' %}
+                     selected="selected"{% endif %}>Coursework Satisfied - Late Add</option>
+                 <option value="E" {% if send.status == 'E' %}
+                     selected="selected"{% endif %}>Expired</option>
+                 <option value="P" {% if send.status == 'P' %}
+                     selected="selected"{% endif %}>Pending</option>
+             </select>
+
+            <input type="submit" name="submit" id="submit" value="Submit" />
+        </div>
+    </form>
+
+    {% if credentials %}
+
+    <h2>Search Results for {{ recv.credential_desc_long }} ({{ recv.credential_code }})</h2>
+
+    <span class="bold">
+        Download Results:
+        {%  if '?' in this_url %}
+            <a href="{{ this_url }}&export=csv" class="btn btn-default"><button>Download</button></a>
+        {% else %}
+            <a href="{{ this_url }}?export=csv" class="btn btn-default"><button>Download</button></a>
+        {% endif %}
+    </span>
+
+    <div class="bold">
+
+    <form id="code_report" method="get" action="">
+        Send a List of All Students in This Credential to eReports:
+        <input type="hidden" name="status_report" id="status_report" value="{{ send.status }}" />
+        <input type="hidden" name="code" id="code" size="8" value="{{ send.credential_code }}" maxlength="8" />
+        <input type="submit" name="code_submitted" id="code_submitted" value="Submit" />
+    </form>
+    </div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if credentials.has_previous %}
+                <a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ credentials.number }} of {{ credentials.paginator.num_pages }}.
+            </span>
+
+            {% if credentials.has_next %}
+                 <a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+
+
+    <table id="credentials" summary="This table displays credentials for a
+                                     student retrieved through an EID
+                                     search.">
+
+        <thead>
+            <tr>
+                <th id="c_eid"><a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=eid&amp;sort_direction={{ next_sort_direction }}">EID</a></th>
+                <th id="c_name"><a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=name&amp;sort_direction={{ next_sort_direction }}">Name</a></th>
+                <th id="c_status"><a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=status&amp;sort_direction={{ next_sort_direction }}">Status</a></th>
+                <th id="c_pursuing"><a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=pursuing&amp;sort_direction={{ next_sort_direction }}">Pursuing</a></th>
+                <th id="c_effective_ccyys"><a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=effective_ccyys&amp;sort_direction={{ next_sort_direction }}">Effective</a></th>
+                <th id="c_catalog"><a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=catalog_beg&amp;sort_direction={{ next_sort_direction }}">Catalog</a></th>
+                <th id="c_conferred_ccyys"><a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort=conferred_ccyys&amp;sort_direction={{ next_sort_direction }}">Degree CCYYS</a></th>
+                {%  if recv.status != 'Pending' %}
+                    <th id="c_edit">View/Edit</th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for item in credentials %}
+            {% if item.eid %}
+            <tr>
+                <td headers="c_eid">{{ item.eid }}</td>
+                <td headers="c_name">{{ item.name }}</td>
+                <td headers="c_status">{{ item.status }}</td>
+                <td headers="c_pursuing">{{ item.pursuing }}</td>
+                <td headers="c_effective_ccyys">{% if item.effective_ccyys != '0' %}{{ item.effective_ccyys }}{% endif %}</td>
+                <td headers="c_catalog">{{ item.catalog }}</td>
+                <td headers="c_conferred_ccyys">
+                    {%  if item.conferred_ccyys != '0' %}{{ item.conferred_ccyys }} {%  endif %}
+                </td>
+                {%  if item.status != 'Pending' %}
+                    <td headers="c_edit"><form action="{% url 'credential_by_doc_nbr' doc_nbr=item.doc_nbr %}"><input type="submit" value="View/Edit"/></form></td>
+                {%  endif %}
+
+            </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if credentials.has_previous %}
+                <a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ credentials.number }} of {{ credentials.paginator.num_pages }}.
+            </span>
+
+            {% if credentials.has_next %}
+                 <a href="{% url 'search_by_code' %}?s_credential_code={{ send.credential_code }}&amp;s_status={{ send.status }}&amp;submit=Submit&amp;sort={{ sort_key }}&amp;sort_direction={{ sort_direction }}&amp;page={{ credentials.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+
+
+    {% elif form_submitted %}
+
+    <p class="no_results">No results matched your search.</p>
+
+    {% endif %}
+
+
+{% endif %}
+{% endblock %}

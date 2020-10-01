@@ -1,0 +1,151 @@
+{% extends 'utd_base.html' %}
+
+{% load static from staticfiles %}
+
+{% block content %}
+
+<!-- Future: Create a DIV class with page styling.  Create external CSS. -->
+
+<div style="
+    padding: 7px;
+    border: 2px solid #824324;
+    margin: 16px;"
+>
+
+<div>
+    <h2>Systems Links (Production)</h2>
+</div>
+
+<div>
+    <h3><a href="https://utexas.box.com/s/5ei4znnhiwzrc7lig52rlhkz67tbjivt">Minor/Certificate Credential Request Form</a></h3>
+    <ul>
+        <li> - Allows colleges to request new minors/certificates. </li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://utdirect.utexas.edu/apps/degree/minors/">Minors/Certificate Add/Update/View/Search</a></h3>
+    <ul>
+        <li> - Allows anyone with a UT EID to search for all minors/certificates.</li>
+        <li> - Allows registrar staff to add and update minor/certificate info.</li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://utdirect.utexas.edu/apps/degree/plans/">Degree Plans Add/Update/View/Search</a></h3>
+    <ul>
+        <li> - Allows authorized staff to search and view existing degree plans, minors, and certificates.</li>
+        <li> - Allows registrar staff to add and update degree plans, minors, and certificates.</li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://utdirect.utexas.edu/apps/sisutil/edoc/selection/">Minor/Certificate Applications and Approvals</a></h3>
+    <ul>
+        <li> - Allows students to apply for minors/certificates. </li>
+        <li> - Allows advisors to apply for minors/certificates for a student. </li>
+        <li> - Allows colleges/departments the ability to approve students in restricted minors/certificates. </li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://utdirect.utexas.edu/apps/degree/audits/profiles/">Student IDA Profiles</a></h3>
+    <ul>
+        <li> - Allows advisors to link minors/certificates to a student’s major degree plan.</li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://utdirect.utexas.edu/apps/degree/audits/">IDA 2.0</a></h3>
+    <ul>
+        <li> - Allows anyone with a UT EID to run degree audits on degree plans, minors, and certificates. </li>
+        <li> - Allows colleges to certify degree plans with minors/certificates. </li>
+    </ul>
+</div>
+
+</div>
+
+<div style="
+    padding: 7px;
+    border: 2px solid #824324;
+    margin: 16px;"
+>
+
+<div>
+    <h2>Systems Sandbox (Qual)</h2>
+</div>
+
+<div>
+    <h3><a href="https://utexas.box.com/s/5ei4znnhiwzrc7lig52rlhkz67tbjivt">Minor/Certificate Credential Request Form</a></h3>
+    <ul>
+        <li> - Allows colleges to request new minors/certificates. </li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://qual.its.utexas.edu/apps/degree/minors/">Minors/Certificate Add/Update/View/Search</a></h3>
+    <ul>
+        <li> - Allows anyone with a UT EID to search for all minors/certificates.</li>
+        <li> - Allows registrar staff to add and update minor/certificate info.</li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://qual.its.utexas.edu/apps/degree/plans/">Degree Plans Add/Update/View/Search</a></h3>
+    <ul>
+        <li> - Allows authorized staff to search and view existing degree plans, minors, and certificates.</li>
+        <li> - Allows registrar staff to add and update degree plans, minors, and certificates.</li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://qual.its.utexas.edu/apps/sisutil/edoc/selection/">Minor/Certificate Applications and Approvals</a></h3>
+    <ul>
+        <li> - Allows students to apply for minors/certificates. </li>
+        <li> - Allows advisors to apply for minors/certificates for a student. </li>
+        <li> - Allows colleges/departments the ability to approve students in restricted minors/certificates. </li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://qual.its.utexas.edu/apps/degree/audits/profiles/">Student IDA Profiles</a></h3>
+    <ul>
+        <li> - Allows advisors to link minors/certificates to a student’s major degree plan.</li>
+    </ul>
+</div>
+
+<div>
+    <h3><a href="https://qual.its.utexas.edu/apps/degree/audits/">IDA 2.0</a></h3>
+    <ul>
+        <li> - Allows anyone with a UT EID to run degree audits on degree plans, minors, and certificates. </li>
+        <li> - Allows colleges to certify degree plans with minors/certificates. </li>
+    </ul>
+</div>
+
+</div>
+
+
+<div style="
+    padding: 7px;
+    border: 2px solid #824324;
+    margin: 16px;"
+>
+
+<div>
+    <h2>Linking your page directly to the student application</h2>
+</div>
+
+<p>You may link directly into the specific minor or certificate page from your website by using the formats below.  Note the changes after the 'submission/'section.
+<br> Examples:</p>
+
+<ul>
+    <li>Open Minors: https://utdirect.utexas.edu/apps/sisutil/edoc/submission/applyforminor?action=2&minors=MNCADV01</li>
+    <li>Application for a Minor: https://utdirect.utexas.edu/apps/sisutil/edoc/submission/regforminor?action=2&minors=MN9ARI01</li>
+    <li>Open Certificate: https://utdirect.utexas.edu/apps/sisutil/edoc/submission/applyforcertificate?action=2&minors=CTEBIO01</li>
+    <li>Application for a Certificate: https://utdirect.utexas.edu/apps/sisutil/edoc/submission/regforcertificate?action=2&minors=CTUBDP01</li>
+</ul>
+
+</div>
+
+{% endblock %}
+

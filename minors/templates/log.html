@@ -1,0 +1,24 @@
+{% extends 'minors_base.html' %}
+
+{% load static from staticfiles %}
+
+{% block body %}
+
+    <h2>Search for logs by EID</h2>
+
+    <form id="search" method="get" action="{% url 'search' %}">
+
+        <div>
+            <label for="search_eid">EID</label>
+            <input name="search_eid" id="search_eid"
+                   value="{{ recv.search_eid }}"
+                   size="8" maxlength="8" />
+            <input type="submit" name="submit" id="submit" value="Submit" />
+        </div>
+    </form>
+
+    {% if recv.search_eid %}
+    {% include 'log_results.html' %}
+    {% endif %}
+
+{% endblock %}

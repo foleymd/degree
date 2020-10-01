@@ -1,0 +1,42 @@
+{% extends 'utd_base.html' %}
+
+{% load static from staticfiles %}
+
+{% block content %}
+
+    <h2> Reports</h2>
+
+    {% if messages %}
+        <ul class="success">
+            {% for message in messages %}
+                <li>{{ message }} Reference number: {{ job_number }}.</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="report_buttons">
+        <h4>Send Minors and Certificate Counts to eReports:</h4>
+        <form id="counts" method="get" action="">
+            <input type="submit" name="counts_submitted" id="counts_submitted" value="Submit" />
+        </form>
+    </div>
+
+    <div class="report_buttons">
+    <h4>Send List of a Student's Credentials to eReports:</h4>
+    <form id="eid" method="get" action="">
+        <label for="eid">EID:</label></span>
+        <input name="eid" id="eid" size="8" maxlength="8" />
+        <input type="submit" name="eid_submitted" id="eid_submitted" value="Submit" />
+    </form>
+    </div>
+
+    <div class="report_buttons">
+    <h4>Send a List of All Students in a Given Credential to eReports:</h4>
+    <form id="code" method="get" action="">
+        <label for="code">Credential Code:</label></span>
+        <input name="code" id="code" size="8" maxlength="8" />
+        <input type="submit" name="code_submitted" id="code_submitted" value="Submit" />
+    </form>
+    </div>
+
+{%  endblock %}

@@ -1,0 +1,39 @@
+<h2>Logs for {{ recv.name }} - {{ recv.search_eid }}</h2>
+{% if logs %}
+   <table id="logs" summary="This table displays credentials logs for a
+                                     student retrieved through an EID
+                                     search.">
+
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">User</th>
+                <th scope="col">Credential Code</th>
+                <th scope="col">Change type</th>
+                <th scope="col">Old Value</th>
+                <th scope="col">New Value</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for item in logs %}
+            <tr>
+                <td>{{ item.create_date_display }}</td>
+                <td>{{ item.create_time_display }}</td>
+                <td>{{ item.create_id }}</td>
+                <td>{{ item.credential_code }}</td>
+                <td>{{ item.log_desc }}</td>
+                <td>{{ item.old_value }}</td>
+                <td>{{ item.new_value }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+    {% if recv.paging_isn %}
+    <a href="{% url 'logs_by_eid' recv.search_eid %}?paging_isn={{ recv.paging_isn }}&amp;paging_create_date_cymd={{ recv.paging_create_date_cymd }}&paging_create_time={{ recv.paging_create_time }}" class="button">Next page</a>
+    {% endif %}
+{% else %}
+     <p>No records found.</p>
+{% endif %}
